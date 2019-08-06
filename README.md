@@ -68,3 +68,9 @@ libadd.a:add.o:                 U __Z3subii
 $ nm -A libsub.a
 libsub.a:sub.o:0000000000000000 T __Z3subii
 ```
+
+## FMI
+### check list
+[ ] .aの中の.oの依存関係による自己ループ
+[ ] .aの中の.oの仕様の確認
+[ ] `?`への依存がある場合に，ノードの形式として点線の切り替えオプションの検討
