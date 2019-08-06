@@ -14,12 +14,12 @@ pip3 install graphviz
 
 ## how to run
 ```
-static_lib_dep_tree -o out.svg liba.a libb.a libc.a libd.a libe.a
+static-lib-dep-tree -o out.svg liba.a libb.a libc.a libd.a libe.a
 
-static_lib_dep_tree -o out.svg liba.a libb.a libc.a libd.a libe.a liba.a
+static-lib-dep-tree -o out.svg liba.a libb.a libc.a libd.a libe.a liba.a
 
-static_lib_dep_tree -o out.svg liba.a libb.a libc.a libd.a libe.a liba.a libc.a
-static_lib_dep_tree -l -o out.svg liba.a libb.a libc.a libd.a libe.a
+static-lib-dep-tree -o out.svg liba.a libb.a libc.a libd.a libe.a liba.a libc.a
+static-lib-dep-tree -l -o out.svg liba.a libb.a libc.a libd.a libe.a
 ```
 
 __you can use below python script to find circular reference__
@@ -27,7 +27,7 @@ __you can use below python script to find circular reference__
 [misc\-scripts/dot\_find\_cycles\.py at master · jantman/misc\-scripts]( https://github.com/jantman/misc-scripts/blob/master/dot_find_cycles.py )
 
 ```
-$ static_lib_dep_tree -l -o out.dot liba.a libb.a libc.a libd.a libe.a
+$ static-lib-dep-tree -l -o out.dot liba.a libb.a libc.a libd.a libe.a
 $ ./dot_find_cycles.py out.dot
 ['libe.a', 'liba.a', 'libd.a', 'libc.a']
 ['libe.a', 'liba.a', 'libc.a']
