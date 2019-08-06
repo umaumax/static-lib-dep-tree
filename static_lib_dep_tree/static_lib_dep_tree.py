@@ -96,6 +96,7 @@ def main():
     parser.add_argument('--ranksep', default=1.0, type=float)
     parser.add_argument('-l', '--loop', action='store_true', help="enable gcc's '-Wl,--start-group ... -Wl,--end-group' like option")
     parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('--visible-self-loop', action='store_true', help="show .a self link edge loop (e.g. a1.o -> a2.o in a.a)")
     parser.add_argument('args', nargs='*')
 
     args, extra_args = parser.parse_known_args()
@@ -143,6 +144,9 @@ def main():
             graph.edge(lib_archive.filepath, "?", label="")
         graph.node(lib_archive.filepath, shape="circle", color="black", style=style, label=lib_archive.filepath)
         for depend_filepath in depend_filepath_list:
+            if not args.visible_self_loop:
+                if lib_archive.filepath == depend_filepath:
+                    continue
             graph.edge(lib_archive.filepath, depend_filepath, label="")
 
     if args.verbose:

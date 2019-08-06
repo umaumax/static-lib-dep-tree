@@ -50,6 +50,8 @@ g++ -std=c++11 add.cpp -c -o add.o
 ar r libadd.a add.o
 g++ -std=c++11 sub.cpp -c -o sub.o
 ar r libsub.a sub.o
+
+ar r libabced.a a.o b.o c.o d.o e.o
 ```
 
 ## nm command output examples
@@ -71,6 +73,6 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
 
 ## FMI
 ### check list
-[ ] .aの中の.oの依存関係による自己ループ
 [ ] .aの中の.oの仕様の確認
+[x] .aの中の.oの依存関係による自己ループ
 [ ] `?`への依存がある場合に，ノードの形式として点線の切り替えオプションの検討
