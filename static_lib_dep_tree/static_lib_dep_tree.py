@@ -104,6 +104,7 @@ def main():
     args, extra_args = parser.parse_known_args()
 
     lib_archive_dict = {}
+    lib_archive_loop_dict = {}
     target_file_list = args.args
     uniq_target_file_list = sorted(set(target_file_list), key=target_file_list.index)
     for index, target_file in enumerate(uniq_target_file_list):
@@ -113,17 +114,27 @@ def main():
             print("Failed to parse '{0}'".format(target_file), file=sys.stderr)
             return 1
         lib_archive_dict[target_file] = lib_archive
+        lib_archive = LibArchive()
+        ret = lib_archive.parse(target_file)
+        if not ret:
+            print("Failed to parse '{0}'".format(target_file), file=sys.stderr)
+            return 1
+        lib_archive_loop_dict[target_file] = lib_archive
 
     # NOTE: 実行時引数で指定した順番にリンクを行う(ライブラリのファイルパスは重複する可能性があり，さｒに順番にも意味がある)
     for index, src_file in enumerate(target_file_list):
         lib_archive = lib_archive_dict[src_file]
-        link_target_list = target_file_list[index + 1:]
-        if args.loop:
-            # NOTE: left shift (loop)
-            link_target_list = target_file_list[index + 1:] + target_file_list[:index + 1]
-        for _, target_file in enumerate(link_target_list):
+        lib_archive_loop = lib_archive_loop_dict[src_file]
+        next_target_list = target_file_list[index + 1:]
+        additional_next_target_list = target_file_list[:index + 1]
+        for _, target_file in enumerate(next_target_list):
             target_lib_archive = lib_archive_dict[target_file]
             lib_archive.link(target_lib_archive)
+        link_loop_target_list = next_target_list + additional_next_target_list
+        # NOTE: left shift (loop)
+        for _, target_file in enumerate(link_loop_target_list):
+            target_lib_archive = lib_archive_loop_dict[target_file]
+            lib_archive_loop.link(target_lib_archive)
 
     main_graph = Digraph(format=args.format)
     main_graph.attr("graph", nodesep=str(args.nodesep), ranksep=str(args.ranksep))
@@ -132,41 +143,55 @@ def main():
     dependency_edge_dict = collections.defaultdict(lambda: 0)
     for index, target_file in enumerate(uniq_target_file_list):
         lib_archive = lib_archive_dict[target_file]
-        depend_filepath_list = lib_archive.get_depend_filepath_list()
+        lib_archive_loop = lib_archive_loop_dict[target_file]
+        target_lib_archive = lib_archive_loop if args.loop else lib_archive
+        depend_filepath_list = target_lib_archive.get_depend_filepath_list()
+        loop_depend_filepath_list = lib_archive_loop.get_depend_filepath_list()
         if args.verbose:
-            print(index, lib_archive)
+            print(index, target_lib_archive)
             print("depend_filepath_list", depend_filepath_list)
-            print("resolved_symbol_dict", lib_archive.get_resolved_symbol_dict())
-            print("unresolved_symbol_dict", lib_archive.get_unresolved_symbol_dict())
+            print("resolved_symbol_dict", target_lib_archive.get_resolved_symbol_dict())
+            print("unresolved_symbol_dict", target_lib_archive.get_unresolved_symbol_dict())
             print()
         style = "solid"
-        if not lib_archive.is_resolved():
+        color = "black"
+        resolved = target_lib_archive.is_resolved()
+        loop_resolved = lib_archive_loop.is_resolved()
+        # NOTE: ループリンク時にも解決できないシンボルが存在
+        if not resolved and not loop_resolved:
             style = "dotted"
+            color = "red"
             # NOTE: 複数の.aでunresolvedのときには複数個の'?'nodeが生成される?
-            graph.node("?", shape="circle", color="black", style=style, label="?")
-            key = ','.join((lib_archive.filepath, "?"))
+            graph.node("?", shape="circle", color=color, style=style, label="?")
+            key = ','.join((target_lib_archive.filepath, "?"))
             if args.enable_multi_edges or key not in dependency_edge_dict:
-                graph.edge(lib_archive.filepath, "?", label="")
+                graph.edge(target_lib_archive.filepath, "?", color=color, label="")
             dependency_edge_dict[key] += 1
-        graph.node(lib_archive.filepath, shape="circle", color="black", style=style, label=lib_archive.filepath)
-        for depend_filepath in depend_filepath_list:
+        if not resolved:
+            color = "red"
+        graph.node(target_lib_archive.filepath, shape="circle", color=color, style=style, label=target_lib_archive.filepath)
+        for depend_filepath in loop_depend_filepath_list:
+            color = "black"
             if not args.visible_self_loop:
-                if lib_archive.filepath == depend_filepath:
+                if target_lib_archive.filepath == depend_filepath:
                     continue
-            key = ','.join((lib_archive.filepath, depend_filepath))
+            key = ','.join((target_lib_archive.filepath, depend_filepath))
+            if depend_filepath not in depend_filepath_list:
+                color = "red"
             if args.enable_multi_edges or key not in dependency_edge_dict:
-                graph.edge(lib_archive.filepath, depend_filepath, label="")
+                graph.edge(target_lib_archive.filepath, depend_filepath, color=color, label="")
             dependency_edge_dict[key] += 1
 
     if args.verbose:
+        target_lib_archive_dict = lib_archive_loop_dict if args.loop else lib_archive_dict
         print("[resolved_library_archives]")
         for index, target_file in enumerate(uniq_target_file_list):
-            lib_archive = lib_archive_dict[target_file]
+            lib_archive = target_lib_archive_dict[target_file]
             if lib_archive.is_resolved():
                 print(target_file)
         print("[unresolved_library_archives]")
         for index, target_file in enumerate(uniq_target_file_list):
-            lib_archive = lib_archive_dict[target_file]
+            lib_archive = target_lib_archive_dict[target_file]
             if not lib_archive.is_resolved():
                 print(target_file)
 
