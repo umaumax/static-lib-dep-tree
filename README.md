@@ -1,5 +1,8 @@
 # static-lib-dep-tree
 
+## TODO
+* refactor code
+
 ## how to install
 ```
 # for avoiding 'pip Installing collected packages: UNKNOWN'
