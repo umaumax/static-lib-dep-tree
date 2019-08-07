@@ -24,7 +24,8 @@ static-lib-dep-tree -l -o out.svg liba.a libb.a libc.a libd.a libe.a
 
 __you can use below python script to find circular reference__
 
-[misc\-scripts/dot\_find\_cycles\.py at master · jantman/misc\-scripts]( https://github.com/jantman/misc-scripts/blob/master/dot_find_cycles.py )
+* [misc\-scripts/dot\_find\_cycles\.py at master · jantman/misc\-scripts]( https://github.com/jantman/misc-scripts/blob/master/dot_find_cycles.py )
+  * python3 script
 
 ```
 $ static-lib-dep-tree -l -o out.dot liba.a libb.a libc.a libd.a libe.a
