@@ -4,6 +4,7 @@ import sys
 import os.path
 import subprocess
 import argparse
+import collections
 
 from graphviz import Digraph
 
@@ -97,6 +98,7 @@ def main():
     parser.add_argument('-l', '--loop', action='store_true', help="enable gcc's '-Wl,--start-group ... -Wl,--end-group' like option")
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('--visible-self-loop', action='store_true', help="show .a self link edge loop (e.g. a1.o -> a2.o in a.a)")
+    parser.add_argument('--enable-multi-edges', action='store_true', help="show multiple connected edges")
     parser.add_argument('args', nargs='*')
 
     args, extra_args = parser.parse_known_args()
@@ -127,6 +129,7 @@ def main():
     main_graph.attr("graph", nodesep=str(args.nodesep), ranksep=str(args.ranksep))
     graph = main_graph
 
+    dependency_edge_dict = collections.defaultdict(lambda: 0)
     for index, target_file in enumerate(uniq_target_file_list):
         lib_archive = lib_archive_dict[target_file]
         depend_filepath_list = lib_archive.get_depend_filepath_list()
@@ -141,13 +144,19 @@ def main():
             style = "dotted"
             # NOTE: 複数の.aでunresolvedのときには複数個の'?'nodeが生成される?
             graph.node("?", shape="circle", color="black", style=style, label="?")
-            graph.edge(lib_archive.filepath, "?", label="")
+            key = ','.join((lib_archive.filepath, "?"))
+            if args.enable_multi_edges or key not in dependency_edge_dict:
+                graph.edge(lib_archive.filepath, "?", label="")
+            dependency_edge_dict[key] += 1
         graph.node(lib_archive.filepath, shape="circle", color="black", style=style, label=lib_archive.filepath)
         for depend_filepath in depend_filepath_list:
             if not args.visible_self_loop:
                 if lib_archive.filepath == depend_filepath:
                     continue
-            graph.edge(lib_archive.filepath, depend_filepath, label="")
+            key = ','.join((lib_archive.filepath, depend_filepath))
+            if args.enable_multi_edges or key not in dependency_edge_dict:
+                graph.edge(lib_archive.filepath, depend_filepath, label="")
+            dependency_edge_dict[key] += 1
 
     if args.verbose:
         print("[resolved_library_archives]")
