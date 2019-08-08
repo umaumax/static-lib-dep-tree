@@ -177,7 +177,7 @@ def main():
                     continue
             key = ','.join((target_lib_archive.filepath, depend_filepath))
             if depend_filepath not in depend_filepath_list:
-                color = "red"
+                color = "blue"
             if args.enable_multi_edges or key not in dependency_edge_dict:
                 graph.edge(target_lib_archive.filepath, depend_filepath, color=color, label="")
             dependency_edge_dict[key] += 1
