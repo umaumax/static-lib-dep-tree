@@ -151,6 +151,12 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
 
 
 ## unittest links
+### 基本(ディレクトリ構成/コマンド)
 * [Python 3 標準の unittest でテストを書く際のディレクトリ構成 \- Qiita]( https://qiita.com/hoto17296/items/fa0166728177e676cd36 )
 * [Python標準のunittestの使い方メモ \- Qiita]( https://qiita.com/aomidro/items/3e3449fde924893f18ca )
 * [Pythonのunittestでハマったところと、もっと早くに知りたかったこと \- Qiita]( https://qiita.com/jesus_isao/items/f93c11248192645eb25d )
+
+### 書き方
+* [Python の 単体テストで 大量の入力パターンを効率よくテストする方法 \- Qiita]( https://qiita.com/Asayu123/items/61ef72bb829dd8baba9f )
+
+
