@@ -71,6 +71,34 @@ green -vvv
 green tests.test_static_lib_dep_tree.TestStaticLibDepTree.test_filter_defined_symbol_normal
 ```
 
+## how to run coverage
+[Djangoメモ\(26\) : coverage\.pyでカバレッジ（網羅率）を計測 \- もた日記]( https://wonderwall.hatenablog.com/entry/2018/03/26/003000 )
+
+```
+pip install coverage
+```
+
+```
+coverage run --source='.' --omit='*/tests/*' -m unittest discover tests
+```
+
+you can use `.coveragerc`
+
+```
+coverage report -m
+coverage report -m --omit='*/tests/*'
+
+coverage report -m static_lib_dep_tree/static_lib_dep_tree.py
+```
+
+```
+coverage html static_lib_dep_tree/static_lib_dep_tree.py
+open htmlcov/index.html
+coverage erase
+```
+
+----
+
 ## figures
 * `[x]` -> `[y]`: x depends y
 
