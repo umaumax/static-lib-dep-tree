@@ -39,6 +39,38 @@ $ ./dot_find_cycles.py out.dot
 ['libd.a', 'libc.a']
 ```
 
+### how to run test
+```
+cd $(git rev-parse --show-toplevel)
+# run all
+python -m unittest discover tests
+# run with filter
+python -m unittest discover -p 'test*.py'
+```
+
+個別のモジュールをテストする場合(このときは，`./tests/__init__.py`を作成する必要がある)
+```
+cd $(git rev-parse --show-toplevel)
+# <test dir name>.<test_target python file name without ext>
+python -m unittest tests.test_static_lib_dep_tree
+python -m unittest tests.test_static_lib_dep_tree.TestStaticLibDepTree
+python -m unittest tests.test_static_lib_dep_tree.TestStaticLibDepTree.test_filter_defined_symbol_normal
+```
+
+### color output
+```
+pip install green
+```
+
+```
+green
+green -v
+green -vv
+green -vvv
+
+green tests.test_static_lib_dep_tree.TestStaticLibDepTree.test_filter_defined_symbol_normal
+```
+
 ## figures
 * `[x]` -> `[y]`: x depends y
 
@@ -89,3 +121,8 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
 ### NOTE
 * .oのリンク順番は関係あるが，.aのリンクの順番は関係ない
 
+
+## unittest links
+* [Python 3 標準の unittest でテストを書く際のディレクトリ構成 \- Qiita]( https://qiita.com/hoto17296/items/fa0166728177e676cd36 )
+* [Python標準のunittestの使い方メモ \- Qiita]( https://qiita.com/aomidro/items/3e3449fde924893f18ca )
+* [Pythonのunittestでハマったところと、もっと早くに知りたかったこと \- Qiita]( https://qiita.com/jesus_isao/items/f93c11248192645eb25d )
