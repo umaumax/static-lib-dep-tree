@@ -13,8 +13,8 @@ def filter_defined_symbol(lines):
     filtered_lines = []
     for no, line in enumerate(lines):
         if line.find(' T _') >= 0:
-            undefined_symbol = line.split(' ')[-1]
-            filtered_lines.append(undefined_symbol)
+            defined_symbol = line.split(' ')[-1]
+            filtered_lines.append(defined_symbol)
     return filtered_lines
 
 
