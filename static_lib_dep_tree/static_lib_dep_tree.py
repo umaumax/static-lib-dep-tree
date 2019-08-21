@@ -9,7 +9,7 @@ import collections
 from graphviz import Digraph
 
 
-def filterDefinedSymbol(lines):
+def filter_defined_symbol(lines):
     filtered_lines = []
     for no, line in enumerate(lines):
         if line.find(' T _') >= 0:
@@ -18,7 +18,7 @@ def filterDefinedSymbol(lines):
     return filtered_lines
 
 
-def filterUndefinedSymbol(lines):
+def filter_undefined_symbol(lines):
     filtered_lines = []
     for no, line in enumerate(lines):
         if line.find(' U _') >= 0:
@@ -49,9 +49,9 @@ class LibArchive:
             print("Failed to execute '{0}'".format(' '.join(e.cmd)), file=sys.stderr)
             return False
         self.output_lines = output.splitlines()
-        undefined_symbols = filterUndefinedSymbol(self.output_lines)
+        undefined_symbols = filter_undefined_symbol(self.output_lines)
         self.undefined_symbol_dict = dict(zip(undefined_symbols, [None] * len(undefined_symbols)))
-        defined_symbols = filterDefinedSymbol(self.output_lines)
+        defined_symbols = filter_defined_symbol(self.output_lines)
         self.defined_symbol_dict = dict(zip(defined_symbols, [self.filepath] * len(defined_symbols)))
         return True
 
