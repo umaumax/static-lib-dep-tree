@@ -28,7 +28,7 @@ class TestStaticLibDepTree(unittest.TestCase):
             input, expected = element
             with self.subTest(index=index, input=input, expected=expected):
                 result = static_lib_dep_tree.filter_defined_symbol(input)
-                self.assertEqual(expected, result)
+                self.assertEqual(result, expected)
 
     def test_filter_defined_symbol_error(self):
         dataset = [
@@ -38,7 +38,7 @@ class TestStaticLibDepTree(unittest.TestCase):
             input, expected = element
             with self.subTest(index=index, input=input, expected=expected):
                 result = static_lib_dep_tree.filter_defined_symbol(input)
-                self.assertEqual(expected, result)
+                self.assertEqual(result, expected)
 
     def test_filter_undefined_symbol_normal(self):
         dataset = [
@@ -56,7 +56,7 @@ class TestStaticLibDepTree(unittest.TestCase):
             input, expected = element
             with self.subTest(index=index, input=input, expected=expected):
                 result = static_lib_dep_tree.filter_undefined_symbol(input)
-                self.assertEqual(expected, result)
+                self.assertEqual(result, expected)
 
     def test_filter_undefined_symbol_error(self):
         dataset = [
@@ -66,7 +66,7 @@ class TestStaticLibDepTree(unittest.TestCase):
             input, expected = element
             with self.subTest(index=index, input=input, expected=expected):
                 result = static_lib_dep_tree.filter_undefined_symbol(input)
-                self.assertEqual(expected, result)
+                self.assertEqual(result, expected)
 
 # NOTE: we cannot test codes with main function when treated as test modules
 # because relative filepath is differ between current path and library modules
