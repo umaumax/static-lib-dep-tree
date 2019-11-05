@@ -12,7 +12,7 @@ from graphviz import Digraph
 def filter_defined_symbol(lines):
     filtered_lines = []
     for no, line in enumerate(lines):
-        if line.find(' T _') >= 0:
+        if line.find(' T ') >= 0:
             defined_symbol = line.split(' ')[-1]
             filtered_lines.append(defined_symbol)
     return filtered_lines
@@ -21,7 +21,7 @@ def filter_defined_symbol(lines):
 def filter_undefined_symbol(lines):
     filtered_lines = []
     for no, line in enumerate(lines):
-        if line.find(' U _') >= 0:
+        if line.find(' U ') >= 0:
             undefined_symbol = line.split(' ')[-1]
             filtered_lines.append(undefined_symbol)
     return filtered_lines
