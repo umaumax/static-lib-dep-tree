@@ -65,9 +65,7 @@ class LibArchive:
             self.link(lib_archive)
 
     def get_resolved_symbol_dict(self):
-        ret = {}
-        ret.update(**self.defined_symbol_dict, **dict(filter(lambda v: v[1] is not None, self.undefined_symbol_dict.items())))
-        return ret
+        return {**self.defined_symbol_dict, **dict(filter(lambda v: v[1] is not None, self.undefined_symbol_dict.items()))}
 
     def get_unresolved_symbol_dict(self):
         return dict(filter(lambda v: v[1] is None, self.undefined_symbol_dict.items()))
