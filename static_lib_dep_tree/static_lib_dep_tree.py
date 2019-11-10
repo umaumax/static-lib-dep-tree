@@ -3,10 +3,11 @@
 import sys
 import os.path
 import subprocess
-import argparse
 import collections
+import argparse
 
 from graphviz import Digraph
+import networkx
 
 
 def filter_defined_symbol(lines):
