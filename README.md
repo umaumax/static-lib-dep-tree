@@ -1,7 +1,8 @@
 # static-lib-dep-tree
 
-## TODO
-* refactor code
+static libraries link dependency visualization tool
+
+maybe you can get proper link order by `-v` option
 
 ## how to install
 ```
@@ -28,7 +29,7 @@ static-lib-dep-tree -l -o out.svg liba.a libb.a libc.a libd.a libe.a
 __you can use below python script to find circular reference__
 
 * [misc\-scripts/dot\_find\_cycles\.py at master · jantman/misc\-scripts]( https://github.com/jantman/misc-scripts/blob/master/dot_find_cycles.py )
-  * python3 script
+  * WARN: required python3 script but shebang is `#!/usr/bin/env python`
 
 ```
 $ static-lib-dep-tree -l -o out.dot liba.a libb.a libc.a libd.a libe.a
@@ -37,6 +38,11 @@ $ ./dot_find_cycles.py out.dot
 ['libe.a', 'liba.a', 'libc.a']
 ['libe.a', 'liba.a', 'libb.a', 'libc.a']
 ['libd.a', 'libc.a']
+```
+
+```
+$ static-lib-dep-tree -l -o opencv-dep.svg /usr/local/lib/libopencv*.a --enable-multi-edges
+WIP
 ```
 
 ### how to run test
@@ -144,11 +150,18 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
   * 1.ループなしでlinkを行う
   * 2.ループありでlinkを行う(このときに，新規にlinkできたものに対してflagをONとし，これは，ループすれば見つかるシンボルを表す)
   * NOTE: 1.と2.は指定ライブラリをすべて一巡せずにその場で行っても問題ない(liba.a libb.a liba.aという重複パターンにおいても)
-* [ ] 可視化したsvgを上から順番に見ていけば、依存関係の解決が可能だが，CUI的なoutputは?
+* [x] 可視化したsvgを上から順番に見ていけば、依存関係の解決が可能だが，CUI的なoutputは?
+  * `networkx` libraryを利用?
+* [x] 依存性のないライブラリに色を付ける
+  * [Graphviz/Python: Recoloring a single node after it has been generated \- Stack Overflow]( https://stackoverflow.com/questions/44337180/graphviz-python-recoloring-a-single-node-after-it-has-been-generated )
+  * そもそも，`graphviz`ライブラリはedit向けではないので，`networkx`で書き直すとよい
+* [ ] `networkx`で書き直し
+* [ ] 複数エッジ表現を本数以外に，太さで表現したい(描画の幅の省略ため)
+  * `penwidth`を利用
 
 ### NOTE
-* .oのリンク順番は関係あるが，.aのリンクの順番は関係ない
-
+* [Library order in static linking \- Eli Bendersky's website]( https://eli.thegreenplace.net/2013/07/09/library-order-in-static-linking )
+* コンパイル時の引数の`.o`のリンク順番は関係あるが，`.o`を`.a`にした際には内部のリンクの順番は関係ない?
 
 ## unittest links
 ### 基本(ディレクトリ構成/コマンド)
@@ -158,5 +171,3 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
 
 ### 書き方
 * [Python の 単体テストで 大量の入力パターンを効率よくテストする方法 \- Qiita]( https://qiita.com/Asayu123/items/61ef72bb829dd8baba9f )
-
-

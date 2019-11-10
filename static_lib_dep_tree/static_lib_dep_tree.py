@@ -5,9 +5,29 @@ import os.path
 import subprocess
 import collections
 import argparse
+import tempfile
 
+import graphviz
 from graphviz import Digraph
 import networkx
+
+# NOTE: without creating
+
+
+def gen_tempfile_name(prefix='', suffix=''):
+    temp_name = next(tempfile._get_candidate_names())
+    default_tmp_dir = tempfile._get_default_tempdir()
+    return os.path.join(default_tmp_dir, prefix+temp_name+suffix)
+
+
+# WARN: with tmp file generation
+def graphviz_to_networkx_graph(in_graph):
+    temp_filename = gen_tempfile_name(suffix='.dot')
+    in_graph.render(temp_filename, format='dot')
+    out_graph = networkx.DiGraph(
+        networkx.drawing.nx_pydot.read_dot(temp_filename))
+    os.remove(temp_filename)
+    return out_graph
 
 
 def filter_defined_symbol(lines):
@@ -197,6 +217,22 @@ def main():
                            depend_filepath, color=color, label="")
             dependency_edge_dict[key] += 1
 
+    networkx_graph = graphviz_to_networkx_graph(graph)
+    # NOTE: with edge data
+    for start, end, attrs in networkx_graph.edges(data=True):
+        attrs['label'] = attrs['label'].strip('"')
+    for node, attrs in networkx_graph.nodes(data=True):
+        attrs['label'] = attrs['label'].strip('"')
+        attrs['style'] = 'filled'
+        attrs['fillcolor'] = 'lightgray'
+
+    root_node_names = [n for n, d in networkx_graph.in_degree() if d == 0]
+    for name in root_node_names:
+        networkx_graph.node[name]['shape'] = 'doublecircle'
+        networkx_graph.node[name]['fillcolor'] = 'white'
+        networkx_graph.node[name]['style'] = 'filled'
+        networkx_graph.node[name]['penwidth'] = '2.0'
+
     if args.verbose:
         target_lib_archive_dict = lib_archive_loop_dict if args.loop else lib_archive_dict
         print("[resolved_library_archives]")
@@ -212,10 +248,27 @@ def main():
 
     # NOTE: to avoid xxx.svg -> xxx.svg.svg by using graphviz render() method
     output_filepath = args.output
-    output_without_ext, ext = os.path.splitext(output_filepath)
-    if ext == "." + args.format:
-        output_filepath = output_without_ext
-    main_graph.render(output_filepath)
+    # NOTE: graphviz
+    # output_without_ext, ext = os.path.splitext(output_filepath)
+    # if ext == "." + args.format:
+    # output_filepath = output_without_ext
+    # main_graph.render(output_filepath)
+
+    # NOTE: networkx
+    agrpah = networkx.nx_agraph.to_agraph(networkx_graph)
+    agrpah.draw(output_filepath, prog='dot')
+
+    if args.verbose:
+        # FYI: [python \- How to get the coordinates from layout from graphviz? \- Stack Overflow]( https://stackoverflow.com/questions/13938770/how-to-get-the-coordinates-from-layout-from-graphviz )
+        # NOTE: you can add
+        pos = networkx.drawing.nx_agraph.graphviz_layout(
+            networkx_graph, prog='dot', args='-Grankdir=TB')
+        # NOTE: x is name, (x, y)
+        # NOTE: y -> x
+        # origin point is left bottom
+        pos_sorted = sorted(pos.items(), key=lambda x: (-x[1][1], x[1][0]))
+        print("# [log] link libraries below order", file=sys.stderr)
+        print(' '.join([x[0] for x in pos_sorted]), file=sys.stderr)
 
 
 if __name__ == '__main__':
