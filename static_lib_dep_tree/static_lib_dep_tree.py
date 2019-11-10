@@ -44,15 +44,19 @@ class LibArchive:
     def parse(self, filepath):
         self.filepath = filepath
         try:
-            output = subprocess.check_output(["nm", "-A", self.filepath], stderr=subprocess.DEVNULL).decode()
+            output = subprocess.check_output(
+                ["nm", "-A", self.filepath], stderr=subprocess.DEVNULL).decode()
         except subprocess.CalledProcessError as e:
-            print("Failed to execute '{0}'".format(' '.join(e.cmd)), file=sys.stderr)
+            print("Failed to execute '{0}'".format(
+                ' '.join(e.cmd)), file=sys.stderr)
             return False
         self.output_lines = output.splitlines()
         undefined_symbols = filter_undefined_symbol(self.output_lines)
-        self.undefined_symbol_dict = dict(zip(undefined_symbols, [None] * len(undefined_symbols)))
+        self.undefined_symbol_dict = dict(
+            zip(undefined_symbols, [None] * len(undefined_symbols)))
         defined_symbols = filter_defined_symbol(self.output_lines)
-        self.defined_symbol_dict = dict(zip(defined_symbols, [self.filepath] * len(defined_symbols)))
+        self.defined_symbol_dict = dict(
+            zip(defined_symbols, [self.filepath] * len(defined_symbols)))
         return True
 
     def link(self, lib_archive):
@@ -90,13 +94,17 @@ class LibArchive:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--output', required=True, type=str)
-    parser.add_argument('--format', default="svg", type=str, help="svg,png,dot,jpg,pdf,bmp")
+    parser.add_argument('--format', default="svg", type=str,
+                        help="svg,png,dot,jpg,pdf,bmp")
     parser.add_argument('--nodesep', default=1.0, type=float)
     parser.add_argument('--ranksep', default=1.0, type=float)
-    parser.add_argument('-l', '--loop', action='store_true', help="enable gcc's '-Wl,--start-group ... -Wl,--end-group' like option")
+    parser.add_argument('-l', '--loop', action='store_true',
+                        help="enable gcc's '-Wl,--start-group ... -Wl,--end-group' like option")
     parser.add_argument('-v', '--verbose', action='store_true')
-    parser.add_argument('--visible-self-loop', action='store_true', help="show .a self link edge loop (e.g. a1.o -> a2.o in a.a)")
-    parser.add_argument('--enable-multi-edges', action='store_true', help="show multiple connected edges")
+    parser.add_argument('--visible-self-loop', action='store_true',
+                        help="show .a self link edge loop (e.g. a1.o -> a2.o in a.a)")
+    parser.add_argument('--enable-multi-edges', action='store_true',
+                        help="show multiple connected edges")
     parser.add_argument('args', nargs='*')
 
     args, extra_args = parser.parse_known_args()
@@ -104,7 +112,8 @@ def main():
     lib_archive_dict = {}
     lib_archive_loop_dict = {}
     target_file_list = args.args
-    uniq_target_file_list = sorted(set(target_file_list), key=target_file_list.index)
+    uniq_target_file_list = sorted(
+        set(target_file_list), key=target_file_list.index)
     for index, target_file in enumerate(uniq_target_file_list):
         lib_archive = LibArchive()
         ret = lib_archive.parse(target_file)
@@ -135,7 +144,8 @@ def main():
             lib_archive_loop.link(target_lib_archive)
 
     main_graph = Digraph(format=args.format)
-    main_graph.attr("graph", nodesep=str(args.nodesep), ranksep=str(args.ranksep))
+    main_graph.attr("graph", nodesep=str(
+        args.nodesep), ranksep=str(args.ranksep))
     graph = main_graph
 
     dependency_edge_dict = collections.defaultdict(lambda: 0)
@@ -148,8 +158,10 @@ def main():
         if args.verbose:
             print(index, target_lib_archive)
             print("depend_filepath_list", depend_filepath_list)
-            print("resolved_symbol_dict", target_lib_archive.get_resolved_symbol_dict())
-            print("unresolved_symbol_dict", target_lib_archive.get_unresolved_symbol_dict())
+            print("resolved_symbol_dict",
+                  target_lib_archive.get_resolved_symbol_dict())
+            print("unresolved_symbol_dict",
+                  target_lib_archive.get_unresolved_symbol_dict())
             print()
         style = "solid"
         color = "black"
@@ -160,14 +172,17 @@ def main():
             style = "dotted"
             color = "red"
             # NOTE: 複数の.aでunresolvedのときには複数個の'?'nodeが生成される?
-            graph.node("?", shape="circle", color=color, style=style, label="?")
+            graph.node("?", shape="circle", color=color,
+                       style=style, label="?")
             key = ','.join((target_lib_archive.filepath, "?"))
             if args.enable_multi_edges or key not in dependency_edge_dict:
-                graph.edge(target_lib_archive.filepath, "?", color=color, label="")
+                graph.edge(target_lib_archive.filepath,
+                           "?", color=color, label="")
             dependency_edge_dict[key] += 1
         if not resolved:
             color = "red"
-        graph.node(target_lib_archive.filepath, shape="circle", color=color, style=style, label=target_lib_archive.filepath)
+        graph.node(target_lib_archive.filepath, shape="circle",
+                   color=color, style=style, label=target_lib_archive.filepath)
         for depend_filepath in loop_depend_filepath_list:
             color = "black"
             if not args.visible_self_loop:
@@ -177,7 +192,8 @@ def main():
             if depend_filepath not in depend_filepath_list:
                 color = "blue"
             if args.enable_multi_edges or key not in dependency_edge_dict:
-                graph.edge(target_lib_archive.filepath, depend_filepath, color=color, label="")
+                graph.edge(target_lib_archive.filepath,
+                           depend_filepath, color=color, label="")
             dependency_edge_dict[key] += 1
 
     if args.verbose:
