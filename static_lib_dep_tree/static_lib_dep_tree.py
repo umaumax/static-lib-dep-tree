@@ -228,10 +228,10 @@ def main():
 
     root_node_names = [n for n, d in networkx_graph.in_degree() if d == 0]
     for name in root_node_names:
-        networkx_graph.node[name]['shape'] = 'doublecircle'
-        networkx_graph.node[name]['fillcolor'] = 'white'
-        networkx_graph.node[name]['style'] = 'filled'
-        networkx_graph.node[name]['penwidth'] = '2.0'
+        networkx_graph.nodes[name]['shape'] = 'doublecircle'
+        networkx_graph.nodes[name]['fillcolor'] = 'white'
+        networkx_graph.nodes[name]['style'] = 'filled'
+        networkx_graph.nodes[name]['penwidth'] = '2.0'
 
     if args.verbose:
         target_lib_archive_dict = lib_archive_loop_dict if args.loop else lib_archive_dict
