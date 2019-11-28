@@ -160,6 +160,8 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
 * [ ] `networkx`で書き直し
 * [ ] 複数エッジ表現を本数以外に，太さで表現したい(描画の幅の省略ため)
   * `penwidth`を利用
+* [x] 共有ライブラリへの対応
+  * lddtreeで、依存はしているが実は不使用な共有ライブラリの洗い出しが可能
 
 ### NOTE
 * [Library order in static linking \- Eli Bendersky's website]( https://eli.thegreenplace.net/2013/07/09/library-order-in-static-linking )

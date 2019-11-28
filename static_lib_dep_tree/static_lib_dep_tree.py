@@ -64,9 +64,13 @@ class LibArchive:
 
     def parse(self, filepath):
         self.filepath = filepath
+        _, ext = os.path.splitext(self.filepath)
+        opt = ["-A"]
+        if ext == ".so":
+            opt += ["-D"]
         try:
             output = subprocess.check_output(
-                ["nm", "-A", self.filepath], stderr=subprocess.DEVNULL).decode()
+                ["nm", *opt, self.filepath], stderr=subprocess.DEVNULL).decode()
         except subprocess.CalledProcessError as e:
             print("Failed to execute '{0}'".format(
                 ' '.join(e.cmd)), file=sys.stderr)
