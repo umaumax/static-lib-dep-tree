@@ -175,3 +175,32 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
 
 ### 書き方
 * [Python の 単体テストで 大量の入力パターンを効率よくテストする方法 \- Qiita]( https://qiita.com/Asayu123/items/61ef72bb829dd8baba9f )
+
+## other tools?
+* [ojroques/staticdep: A tool to compute the dependencies among object files of a static library]( https://github.com/ojroques/staticdep )
+  * `.a`から`.json`形式で結果を出力する
+    * それを利用して，単一の`.a`の中の`.o`同士の依存関係を調査するツール
+  * Ubuntu 16.04で動作確認済
+  * Mac OS Xでは`nm -s`が実行できず，オプションを変更すると想定した出力とならず，parse errorとなる
+
+* [jameysharp/static\-ldd: Library and command\-line tool for inferring dependencies between static libraries\.]( https://github.com/jameysharp/static-ldd )
+
+```
+cargo install --git https://github.com/jameysharp/static-ldd
+```
+
+では，buildエラーとなるので，下記のpatchを当てて，`cargo install`とするとビルドはできるが，想定通りの挙動とならず
+
+```
+diff --git a/Cargo.toml b/Cargo.toml
+index a8e88d2..02c2baf 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -10,5 +10,5 @@ description = """A library and command-line tool for inferring
+ dependencies between static libraries."""
+ 
+ [dependencies]
+-filebuffer = "0.2.0"
++filebuffer = "0.4.0"
+ goblin = "0.0.10"
+```
