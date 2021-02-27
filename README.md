@@ -5,19 +5,19 @@ static libraries link dependency visualization tool
 maybe you can get proper link order by `-v` option
 
 ## how to install
-```
+``` bash
 # for avoiding 'pip Installing collected packages: UNKNOWN'
 pip3 install setuptools --upgrade
 pip3 install https://github.com/umaumax/static-lib-dep-tree/archive/master.tar.gz
 ```
 
-```
+``` bash
 # required library
 pip3 install graphviz
 ```
 
 ## how to run
-```
+``` bash
 static-lib-dep-tree -o out.svg liba.a libb.a libc.a libd.a libe.a
 
 static-lib-dep-tree -o out.svg liba.a libb.a libc.a libd.a libe.a liba.a
@@ -31,7 +31,7 @@ __you can use below python script to find circular reference__
 * [misc\-scripts/dot\_find\_cycles\.py at master · jantman/misc\-scripts]( https://github.com/jantman/misc-scripts/blob/master/dot_find_cycles.py )
   * WARN: required python3 script but shebang is `#!/usr/bin/env python`
 
-```
+``` bash
 $ static-lib-dep-tree -l -o out.dot liba.a libb.a libc.a libd.a libe.a
 $ ./dot_find_cycles.py out.dot
 ['libe.a', 'liba.a', 'libd.a', 'libc.a']
@@ -40,7 +40,7 @@ $ ./dot_find_cycles.py out.dot
 ['libd.a', 'libc.a']
 ```
 
-```
+``` bash
 $ static-lib-dep-tree -l -o opencv-dep.svg /usr/local/lib/libopencv*.a --enable-multi-edges -v
 /usr/local/lib/libopencv_superres.a /usr/local/lib/libopencv_optflow.a /usr/local/lib/libopencv_bgsegm.a /usr/local/lib/libopencv_xobjdetect.a /usr/local/lib/libopencv_stereo.a /usr/local/lib/libopencv_face.a /usr/local/lib/libopencv_videostab.a /usr/local/lib/libopencv_tracking.a /usr/local/lib/libopencv_ximgproc.a /usr/local/lib/libopencv_stitching.a /usr/local/lib/libopencv_ccalib.a /usr/local/lib/libopencv_video.a /usr/local/lib/libopencv_aruco.a /usr/local/lib/libopencv_rgbd.a /usr/local/lib/libopencv_objdetect.a /usr/local/lib/libopencv_shape.a /usr/local/lib/libopencv_sfm.a /usr/local/lib/libopencv_structured_light.a /usr/local/lib/libopencv_datasets.a /usr/local/lib/libopencv_calib3d.a /usr/local/lib/libopencv_xfeatures2d.a /usr/local/lib/libopencv_videoio.a /usr/local/lib/libopencv_xphoto.a /usr/local/lib/libopencv_text.a /usr/local/lib/libopencv_surface_matching.a /usr/local/lib/libopencv_imgcodecs.a /usr/local/lib/libopencv_img_hash.a /usr/local/lib/libopencv_line_descriptor.a /usr/local/lib/libopencv_highgui.a /usr/local/lib/libopencv_dpm.a /usr/local/lib/libopencv_freetype.a /usr/local/lib/libopencv_gapi.a /usr/local/lib/libopencv_hfs.a /usr/local/lib/libopencv_features2d.a /usr/local/lib/libopencv_plot.a /usr/local/lib/libopencv_reg.a /usr/local/lib/libopencv_saliency.a /usr/local/lib/libopencv_photo.a /usr/local/lib/libopencv_dnn.a /usr/local/lib/libopencv_quality.a /usr/local/lib/libopencv_bioinspired.a /usr/local/lib/libopencv_dnn_objdetect.a /usr/local/lib/libopencv_fuzzy.a /usr/local/lib/libopencv_flann.a /usr/local/lib/libopencv_imgproc.a /usr/local/lib/libopencv_ml.a /usr/local/lib/libopencv_phase_unwrapping.a /usr/local/lib/libopencv_core.a
 $ pkg-config --libs opencv4
@@ -48,7 +48,7 @@ $ pkg-config --libs opencv4
 ```
 
 ### how to run test
-```
+``` bash
 cd $(git rev-parse --show-toplevel)
 # run all
 python -m unittest discover tests
@@ -57,7 +57,7 @@ python -m unittest discover -p 'test*.py'
 ```
 
 個別のモジュールをテストする場合(このときは，`./tests/__init__.py`を作成する必要がある)
-```
+``` bash
 cd $(git rev-parse --show-toplevel)
 # <test dir name>.<test_target python file name without ext>
 python -m unittest tests.test_static_lib_dep_tree
@@ -66,11 +66,11 @@ python -m unittest tests.test_static_lib_dep_tree.TestStaticLibDepTree.test_filt
 ```
 
 ### color output
-```
+``` bash
 pip install green
 ```
 
-```
+``` bash
 green
 green -v
 green -vv
@@ -82,24 +82,24 @@ green tests.test_static_lib_dep_tree.TestStaticLibDepTree.test_filter_defined_sy
 ## how to run coverage
 [Djangoメモ\(26\) : coverage\.pyでカバレッジ（網羅率）を計測 \- もた日記]( https://wonderwall.hatenablog.com/entry/2018/03/26/003000 )
 
-```
+``` bash
 pip install coverage
 ```
 
-```
+``` bash
 coverage run --source='.' --omit='*/tests/*' -m unittest discover tests
 ```
 
 you can use `.coveragerc`
 
-```
+``` bash
 coverage report -m
 coverage report -m --omit='*/tests/*'
 
 coverage report -m static_lib_dep_tree/static_lib_dep_tree.py
 ```
 
-```
+``` bash
 coverage html static_lib_dep_tree/static_lib_dep_tree.py
 open htmlcov/index.html
 coverage erase
@@ -113,7 +113,7 @@ coverage erase
 ![out.dot.svg](./static_lib_dep_tree/examples/out.dot.svg)
 
 ## how to build static libs
-```
+``` bash
 for f in `ls *.cpp`; do g++ -std=c++11 $f -c -o ${f%.cpp}.o; ar r lib${f%.cpp}.a ${f%.cpp}.o; done
 
 for f in `ls *.cpp`; do g++ -std=c++11 $f -c -o ${f%.cpp}.o; done
@@ -127,7 +127,7 @@ ar r libabced.a a.o b.o c.o d.o e.o
 ```
 
 ## nm command output examples
-```
+``` bash
 # Max OS X
 $ nm -A libadd.a
 libadd.a:add.o: 0000000000000000 T __Z3addii
@@ -185,13 +185,13 @@ libsub.a:sub.o:0000000000000000 T __Z3subii
 
 * [jameysharp/static\-ldd: Library and command\-line tool for inferring dependencies between static libraries\.]( https://github.com/jameysharp/static-ldd )
 
-```
+``` bash
 cargo install --git https://github.com/jameysharp/static-ldd
 ```
 
 では，buildエラーとなるので，下記のpatchを当てて，`cargo install`とするとビルドはできるが，想定通りの挙動とならず
 
-```
+``` diff
 diff --git a/Cargo.toml b/Cargo.toml
 index a8e88d2..02c2baf 100644
 --- a/Cargo.toml
